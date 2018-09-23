@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wongwahmeni</title>
+</head>
+<style>
+    /*<!--here you specify the custom font and its font file-->*/
+    @font-face {
+        font-family: symbola;
+        src: url(symbola.ttf);
+    }
+
+    body {
+        font-family: symbola;
+    }
+</style>
+<body style="">
+<div style="columns: 2">
+    {% for date, name, text in rows -%}
+    <b>{{ date }}, {{ name }}:</b><br/>
+    {{ text }}<br/>
+    {%- endfor %}
+</div>
+</body>
+</html>
