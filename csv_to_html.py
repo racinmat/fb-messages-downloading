@@ -10,7 +10,7 @@ if __name__ == '__main__':
     env = Environment(loader=FileSystemLoader(THIS_DIR), trim_blocks=True)
     template = env.get_template('two-column-template.html')
 
-    df = pd.read_csv('Anime world _2018_09_23 20_18.csv')
+    df = pd.read_csv('data/Wongwahmeni_2018_11_01 21_49.csv')
     data = []
     print('loaded data')
     for index, row in df.iterrows():
@@ -18,7 +18,7 @@ if __name__ == '__main__':
         date = datetime.strptime(row['Date'] + ' ' + row['Time'], '%Y-%m-%d %H:%M:%S').strftime("%#d.%#m.,%H:%M")
         data.append((date, row['UserName'], row['MessageBody']))
     print('data converted')
-    template.stream(rows=data).dump('animeworld.html')
+    template.stream(rows=data).dump('data/Wongwahmeni_2018_11_01 21_49.html')
 
 
     # print(datetime.strptime('2018-03-14 11:47 AM', '%Y-%m-%d %I:%M %p').strftime("%d.%#m.,%I:%M"))
