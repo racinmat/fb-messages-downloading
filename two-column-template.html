@@ -17,9 +17,13 @@
 </style>
 <body style="">
 <div style="columns: 2">
-    {% for date, name, text in rows -%}
-    <b>{{ date }}, {{ name }}:</b><br/>
-    {{ text }}<br/>
+    {% for date, group in rows -%}
+        <b>{{ date }}:</b><br/>
+        {% for name, text in group -%}
+<!--            <b>{{ name }}:</b><br/>-->
+            <b>{{ name }}:</b>
+            {{ text }}<br/>
+        {%- endfor %}
     {%- endfor %}
 </div>
 </body>
