@@ -19,10 +19,11 @@
 <div style="columns: 2">
     {% for date, group in rows -%}
         <b>{{ date }}:</b><br/>
-        {% for name, text in group -%}
-<!--            <b>{{ name }}:</b><br/>-->
-            <b>{{ name }}:</b>
-            {{ text }}<br/>
+        {% for name, text, color in group -%}
+{#            <span style="background-color: rgba({{ ', '.join(color) }}); -webkit-print-color-adjust: exact;">#}
+                <b>{{ name }}:</b>
+                {{ text }}<br/>
+{#            </span>#}
         {%- endfor %}
     {%- endfor %}
 </div>
