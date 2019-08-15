@@ -6,6 +6,22 @@ from jinja2 import Environment, PackageLoader, select_autoescape, FileSystemLoad
 import pandas as pd
 from matplotlib import cm
 
+
+def select_name(x):
+    if len(x) > 1:
+        return x[~x.str.match('Removed user')]
+    return x
+
+
+def next_same_user(df): return df.shift(-1)['UserID'] == df['UserID']
+
+
+def prev_same_user(df): return df.shift(1)['UserID'] == df['UserID']
+
+
+def is_smiley(df): return (df['MessageBody'].str.len() == 2) & (df['MessageBody'].str.startswith(':'))
+
+
 if __name__ == '__main__':
     THIS_DIR = os.path.dirname(os.path.abspath(__file__))
     env = Environment(loader=FileSystemLoader(THIS_DIR), trim_blocks=True)
@@ -26,11 +42,29 @@ if __name__ == '__main__':
     user_colors[:, 3] = 0.2
     user_colors[:, :3] *= 255
     user_colors[:, :3] //= 1
-
+    # ptají se na kolik tramvají má DP, naprgat fibbonaciho posloupnost, binární strom, databáz. struktura konzultant, projekty, hodin. sazby, jak spočítám ziskovost DP?
     user_to_color = {user_id: [str(i) for i in user_colors[i]] for i, user_id in enumerate(df['UserID'].unique())}
 
-    # df = df[:1000]
+    # if user was missing for some time, he has Removed User XYZ instead of his name. This is fixed here.
+    id_and_name = df.groupby(['UserID', 'UserName']).count().index.to_frame().reset_index(drop=True)
+    id_to_name = id_and_name.groupby('UserID').agg(select_name)
 
+    # I can not pair images to text, so I exclude empty messages
+    df = df[df['MessageBody'] != '']
+
+    # lots of messages is one char long, and they are after another message from same user, merging them
+    one_char_suffix = (df.shift(-1)['MessageBody'].str.len() == 1) & next_same_user(df)
+    one_char_suffix_next = (df['MessageBody'].str.len() == 1) & prev_same_user(df)
+    df.loc[one_char_suffix, 'MessageBody'] += ' ' + df.shift(-1)[one_char_suffix]['MessageBody']
+    df = df[~one_char_suffix_next]
+
+    # also lots of 2char emoji faces appears as individual message, appending them
+    smiley_suffix = is_smiley(df.shift(-1)) & next_same_user(df)
+    smiley_suffix_next = is_smiley(df) & prev_same_user(df)
+    df.loc[smiley_suffix, 'MessageBody'] += ' ' + df.shift(-1)[smiley_suffix]['MessageBody']
+    df = df[~smiley_suffix_next]
+
+    # df = df[:1000]
     data = []
     print('loaded data')
     # assume sorted
@@ -71,7 +105,8 @@ if __name__ == '__main__':
                 prev_data = timeslot[-1]
                 timeslot[-1] = (prev_data[0], prev_data[1] + '<br/>' + row['MessageBody'], prev_data[2])
             else:
-                timeslot.append((row['UserName'], row['MessageBody'], user_to_color[row['UserID']]))
+                timeslot.append(
+                    (id_to_name.loc[row['UserID']]['UserName'], row['MessageBody'], user_to_color[row['UserID']]))
             prev_row = row
         data.append((name.strftime("%#d.%#m.%#Y, %H:%M"), timeslot))
         if len(data) % 1000 == 0:
