@@ -27,7 +27,9 @@ if __name__ == '__main__':
     env = Environment(loader=FileSystemLoader(THIS_DIR), trim_blocks=True)
     template = env.get_template('two-column-template.jinja2')
 
-    df = pd.read_csv('data/Wongwahmeni-total.csv')
+    # df = pd.read_csv('data/Wongwahmeni-total.csv')
+    # df = pd.read_csv(r'data/Klub Kouzelniku_2019_07_01 01_43-total.csv', encoding='utf-8')
+    df = pd.read_csv(r'data/Die Ta_2019_10_25 00_17.csv', encoding='utf-8')
     # df = pd.read_csv('data/example.csv')
     df['DateTime'] = pd.to_datetime(df['Date'] + ' ' + df['Time'])
     df['MessageBody'] = df['MessageBody'].fillna('').str.replace('&', '&amp;', regex=False)
@@ -113,7 +115,9 @@ if __name__ == '__main__':
             print(name)
 
     print('data converted')
-    template.stream(rows=data).dump('data/Wongwahmeni-total.html')
+    # template.stream(rows=data).dump('data/Wongwahmeni-total.html')
+    # template.stream(rows=data).dump('data/Klub Kouzelniku_2019_07_01 01_43-total.html')
+    template.stream(rows=data).dump('data/Die Ta_2019_10_25 00_17.html')
 
     # chrome_exe = '"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe"'
     # pdf_file = f'{THIS_DIR}\data\Wongwahmeni-total.pdf'

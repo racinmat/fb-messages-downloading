@@ -21,3 +21,4 @@ Images could be supported without problem, you'll just need to modify the csv to
     - Simply open Prince program, select the HTML file and convert it.
     - PDF file with the same name will be created, and now you are done.
 
+- For cluster analysis of chat members, [gephi](https://gephi.org/) is used.
